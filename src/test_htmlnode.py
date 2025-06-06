@@ -2,7 +2,7 @@ import unittest
 
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
-from converter import text_node_to_html_node
+from converter import text_node_to_html_node, split_nodes_delimiter
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html_single_attribute(self):
@@ -122,3 +122,98 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             text_node_to_html_node(invalid_node)
         self.assertEqual(str(context.exception), "Input must be a TextNode")
+
+
+class TestSplitNodesDelimiter(unittest.TestCase):
+    def test_split_code_single(self):
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        expected = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" word", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_split_bold_single(self):
+        node = TextNode("This is text with a **bold phrase** here", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("bold phrase", TextType.BOLD),
+            TextNode(" here", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_split_italic_single(self):
+        node = TextNode("This is text with an _italic phrase_ here", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
+        expected = [
+            TextNode("This is text with an ", TextType.TEXT),
+            TextNode("italic phrase", TextType.ITALIC),
+            TextNode(" here", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_multiple_delimiters(self):
+        node = TextNode("This has **bold** and **another bold** text", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected = [
+            TextNode("This has ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("another bold", TextType.BOLD),
+            TextNode(" text", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_non_text_node(self):
+        node1 = TextNode("Bold text", TextType.BOLD)
+        node2 = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node1, node2], "`", TextType.CODE)
+        expected = [
+            TextNode("Bold text", TextType.BOLD),
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" word", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_missing_closing_delimiter(self):
+        node = TextNode("This is text with a `code block word", TextType.TEXT)
+        with self.assertRaises(ValueError) as context:
+            split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(
+            str(context.exception),
+            "Invalid Markdown syntax: missing closing delimiter '`' in text: This is text with a `code block word",
+        )
+
+    def test_empty_text(self):
+        node = TextNode("", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected = []
+        self.assertEqual(new_nodes, expected)
+
+    def test_delimiter_at_start(self):
+        node = TextNode("**bold at start** and text", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected = [
+            TextNode("bold at start", TextType.BOLD),
+            TextNode(" and text", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_delimiter_at_end(self):
+        node = TextNode("text and **bold at end**", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected = [
+            TextNode("text and ", TextType.TEXT),
+            TextNode("bold at end", TextType.BOLD),
+        ]
+        self.assertEqual(new_nodes, expected)
+
+    def test_no_delimiter(self):
+        node = TextNode("This is plain text", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected = [TextNode("This is plain text", TextType.TEXT)]
+        self.assertEqual(new_nodes, expected)
