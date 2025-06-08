@@ -65,3 +65,77 @@ def extract_markdown_links(text):
     pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)
     return [(anchor_text, url) for anchor_text, url in matches]
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if not isinstance(node, TextNode) or node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        if not node.text:
+            continue
+
+        # extract images from the text
+        images = extract_markdown_images(node.text)
+        if not images:
+            new_nodes.append(node)
+            continue
+
+        current_text = node.text
+        for alt_text, url in images:
+            # split on the first occurence of the image markdown
+            image_markdown = f"![{alt_text}]({url})"
+            parts = current_text.split(image_markdown, 1)
+
+            # add text before the image (if not empty)
+            if parts[0]:
+                new_nodes.append(TextNode(parts[0], TextType.TEXT))
+
+            # add the image node
+            new_nodes.append(TextNode(alt_text, TextType.IMAGE, url))
+
+            # continue processing the remaining text
+            current_text = parts[1]
+
+        # add any remaining text after the last image
+        if current_text:
+            new_nodes.append(TextNode(current_text, TextType.TEXT))
+
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if not isinstance(node, TextNode) or node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        if not node.text:
+            continue
+
+        # extract links from the text
+        links = extract_markdown_links(node.text)
+        if not links:
+            new_nodes.append(node)
+            continue
+
+        current_text = node.text
+        for anchor_text, url in links:
+            # split on the first occurrence of the link markdown
+            link_markdown = f"[{anchor_text}]({url})"
+            parts = current_text.split(link_markdown, 1)
+
+            # add text before the link (if not empty)
+            if parts[0]:
+                new_nodes.append(TextNode(parts[0], TextType.TEXT))
+
+            # add the link node
+            new_nodes.append(TextNode(anchor_text, TextType.LINK, url))
+
+            # continue processing the remaining text
+            current_text = parts[1]
+
+        # add any remaining text after the last link (if not empty)
+        if current_text:
+            new_nodes.append(TextNode(current_text, TextType.TEXT))
+
+    return new_nodes
