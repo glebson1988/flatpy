@@ -9,7 +9,8 @@ from converter import (
         extract_markdown_images,
         split_nodes_image,
         split_nodes_link,
-        text_to_textnodes
+        text_to_textnodes,
+        markdown_to_blocks
 )
 
 class TestHTMLNode(unittest.TestCase):
@@ -484,3 +485,102 @@ class TestSplitNodesDelimiter(unittest.TestCase):
             TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
         ]
         self.assertListEqual(nodes, expected)
+
+
+class TestBlockParser(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = """
+        This is **bolded** paragraph
+
+        This is another paragraph with _italic_ text and `code` here
+        This is the same paragraph on a new line
+
+        - This is a list
+        - with items
+        """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks_single(self):
+        md = "# This is a heading"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            ["# This is a heading"],
+        )
+
+    def test_markdown_to_blocks_multiple(self):
+        md = """
+        # Heading
+
+        Paragraph with **bold** text.
+
+        - List item 1
+        - List item 2
+        """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "# Heading",
+                "Paragraph with **bold** text.",
+                "- List item 1\n- List item 2",
+            ],
+        )
+
+    def test_markdown_to_blocks_empty(self):
+        md = ""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_markdown_to_blocks_only_newlines(self):
+        md = "\n\n\n"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_markdown_to_blocks_extra_newlines(self):
+        md = "\n\n# Heading\n\n\nParagraph\n\n\n"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "# Heading",
+                "Paragraph",
+            ],
+        )
+
+    def test_markdown_to_blocks_leading_trailing_whitespace(self):
+        md = "   \n# Heading  \n  \nParagraph  \n  \n"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "# Heading",
+                "Paragraph",
+            ],
+        )
+
+    def test_markdown_to_blocks_paragraph_with_newlines(self):
+        md = """
+        Paragraph line 1
+        line 2
+        line 3
+
+        - List
+        - Items
+        """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "Paragraph line 1\nline 2\nline 3",
+                "- List\n- Items",
+            ],
+        )

@@ -156,3 +156,15 @@ def text_to_textnodes(text):
     nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
 
     return nodes
+
+def markdown_to_blocks(markdown):
+    raw_blocks = re.split(r'\n\s*\n', markdown.strip())
+
+    blocks = []
+    for block in raw_blocks:
+        lines = block.splitlines()
+        stripped_lines = [line.strip() for line in lines if line.strip()]
+        if stripped_lines:
+            blocks.append("\n".join(stripped_lines))
+
+    return blocks
