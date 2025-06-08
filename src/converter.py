@@ -139,3 +139,20 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(current_text, TextType.TEXT))
 
     return new_nodes
+
+def text_to_textnodes(text):
+    # start with a single TextNode of type TEXT
+    nodes = [TextNode(text, TextType.TEXT)] if text else []
+
+    # split by images first
+    nodes = split_nodes_image(nodes)
+
+    # then split by links
+    nodes = split_nodes_link(nodes)
+
+    # then split by inline formatting: code, bold, italic
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+
+    return nodes
