@@ -14,7 +14,7 @@ The converter handles both inline and block-level markdown elements, providing a
 src/
 ├── __init__.py                 # Package initialization
 ├── main.py                     # Application entry point
-├── converter.py                # Main API for backward compatibility
+├── converter.py                # Main converter API
 ├── nodes/                      # Data models
 │   ├── __init__.py
 │   ├── textnode.py            # TextNode and TextType
@@ -39,17 +39,17 @@ src/
 The project supports parsing the following markdown elements:
 
 ### Inline elements:
-- **Bold text**: `**text**`
-- *Italic text*: `_text_`
-- `Code`: `` `code` ``
-- [Links](url): `[text](url)`
-- ![Images](url): `![alt](url)`
+- **Bold text**: \*\*text\*\*
+- *Italic text*: \_text\_
+- `Code`: \`code\`
+- Links: \[text\]\(url\)
+- Images: \!\[alt\]\(url\)
 
 ### Block elements:
-- Headings: `# H1`, `## H2`, etc.
-- Code blocks: ``` ``` 
-- Quotes: `> quote`
-- Lists: `- item` and `1. item`
+- Headings: \# H1, \#\# H2, etc.
+- Code blocks: \`\`\` \`\`\`
+- Quotes: \> quote
+- Lists: \- item and 1\. item
 - Paragraphs
 
 ## Usage
@@ -68,9 +68,6 @@ python3 -m src.main
 ```python
 from src.parsers import text_to_textnodes, markdown_to_blocks
 from src.nodes import TextNode, TextType
-
-# Or for backward compatibility:
-from src.converter import text_to_textnodes, markdown_to_blocks
 ```
 
 ## Key Features
@@ -79,4 +76,3 @@ from src.converter import text_to_textnodes, markdown_to_blocks
 2. **Easy maintenance**: modular design makes the codebase easy to understand and modify
 3. **Extensible**: can easily add new markdown elements or output formats
 4. **Well tested**: comprehensive test suite with 79+ tests covering all functionality
-5. **Backward compatible**: stable API that preserves existing functionality
