@@ -2,6 +2,7 @@ import unittest
 
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
+from blocknode import BlockType
 from converter import (
         text_node_to_html_node,
         split_nodes_delimiter,
@@ -10,7 +11,8 @@ from converter import (
         split_nodes_image,
         split_nodes_link,
         text_to_textnodes,
-        markdown_to_blocks
+        markdown_to_blocks,
+        block_to_block_type
 )
 
 class TestHTMLNode(unittest.TestCase):
@@ -584,3 +586,61 @@ class TestBlockParser(unittest.TestCase):
                 "- List\n- Items",
             ],
         )
+
+    def test_block_type_heading(self):
+        block = "# Heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "## Subheading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "###### Deep Heading"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "# Heading\nText"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        block = "####### Not a heading"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        block = "#No space heading"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        block = "# "
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_block_type_code(self):
+        block = "```\nCode here\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        block = "```python\nprint('Hello')\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        block = "```\nIncomplete"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_block_type_quote(self):
+        block = "> Quote text"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        block = "> Line 1\n> Line 2"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        block = "> Quote\nNot a quote"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_block_type_unordered_list(self):
+        block = "- Item 1\n- Item 2"
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+        block = "- Single item"
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+        block = "- Item 1\nInvalid item"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_block_type_ordered_list(self):
+        block = "1. Item 1\n2. Item 2"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        block = "1. Single item"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        block = "1. Item 1\n3. Item 2"  # wrong order
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        block = "2. Item 1"  # starts not from 1
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_block_type_paragraph(self):
+        block = "This is a paragraph"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        block = "Line 1\nLine 2"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        block = ""  # empty block
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)

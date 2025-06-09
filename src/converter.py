@@ -1,6 +1,7 @@
 import re
 from htmlnode import LeafNode
 from textnode import TextNode, TextType
+from blocknode import BlockType
 
 def text_node_to_html_node(text_node):
     if not isinstance(text_node, TextNode):
@@ -168,3 +169,40 @@ def markdown_to_blocks(markdown):
             blocks.append("\n".join(stripped_lines))
 
     return blocks
+
+def block_to_block_type(block):
+    if not block:
+        return BlockType.PARAGRAPH
+
+    lines = block.splitlines()
+
+    # heading: starts with 1–6 # and space
+    if re.match(r'^#{1,6}\s+.+$', lines[0]):
+        return BlockType.HEADING
+
+    # code: starts and ends with ```
+    if len(lines) >= 1 and lines[0].startswith('```') and lines[-1].startswith('```'):
+        return BlockType.CODE
+
+    # quote: all rows start with >
+    if all(line.startswith('>') for line in lines if line.strip()):
+        return BlockType.QUOTE
+
+    # unordered list: all rows start with - and space
+    if all(re.match(r'^\-\s+.+$', line) for line in lines if line.strip()):
+        return BlockType.UNORDERED_LIST
+
+    # ordered list: all rows start with number, dot and space (1., 2., ...)
+    if lines and all(
+        re.match(r'^\d+\.\s+.+$', line) for line in lines if line.strip()
+    ):
+        # check that numbers start with 1
+        numbers = [
+            int(re.match(r'^(\d+)\.', line).group(1))
+            for line in lines if line.strip()
+        ]
+        if numbers == list(range(1, len(numbers) + 1)):
+            return BlockType.ORDERED_LIST
+
+    # default: paragraph
+    return BlockType.PARAGRAPH
