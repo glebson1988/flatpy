@@ -14,7 +14,6 @@ The converter handles both inline and block-level markdown elements, providing a
 src/
 ├── __init__.py                 # Package initialization
 ├── main.py                     # Application entry point
-├── converter.py                # Main converter API
 ├── nodes/                      # Data models
 │   ├── __init__.py
 │   ├── textnode.py            # TextNode and TextType
