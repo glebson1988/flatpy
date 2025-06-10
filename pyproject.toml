@@ -1,0 +1,22 @@
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = [
+    "E501",  # line too long - handled by black
+    "W503",  # line break before binary operator - not PEP 8 compliant
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+] 

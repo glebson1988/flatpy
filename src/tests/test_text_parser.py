@@ -3,20 +3,21 @@ Tests for parsing markdown inline elements.
 """
 
 import unittest
+
 from src.nodes import TextNode, TextType
 from src.parsers import (
-    split_nodes_delimiter,
     extract_markdown_images,
     extract_markdown_links,
+    split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
-    text_to_textnodes
+    text_to_textnodes,
 )
 
 
 class TestSplitNodesDelimiter(unittest.TestCase):
     """Tests for the split_nodes_delimiter function."""
-    
+
     def test_split_code_single(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
@@ -112,7 +113,7 @@ class TestSplitNodesDelimiter(unittest.TestCase):
 
 class TestExtractMarkdownElements(unittest.TestCase):
     """Tests for extracting images and links from markdown."""
-    
+
     def test_extract_markdown_images_single(self):
         text = "This is text with a ![image](https://i.imgur.com/zjjcJKZ.png) and some more text."
         result = extract_markdown_images(text)
@@ -180,7 +181,7 @@ class TestExtractMarkdownElements(unittest.TestCase):
 
 class TestSplitNodesImage(unittest.TestCase):
     """Tests for the split_nodes_image function."""
-    
+
     def test_split_images(self):
         node = TextNode(
             "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
@@ -241,7 +242,7 @@ class TestSplitNodesImage(unittest.TestCase):
 
 class TestSplitNodesLink(unittest.TestCase):
     """Tests for the split_nodes_link function."""
-    
+
     def test_split_links(self):
         node = TextNode(
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
@@ -252,7 +253,9 @@ class TestSplitNodesLink(unittest.TestCase):
             TextNode("This is text with a link ", TextType.TEXT),
             TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
             TextNode(" and ", TextType.TEXT),
-            TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"),
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
         ]
         self.assertListEqual(new_nodes, expected)
 
@@ -302,7 +305,7 @@ class TestSplitNodesLink(unittest.TestCase):
 
 class TestTextToTextnodes(unittest.TestCase):
     """Tests for the text_to_textnodes function."""
-    
+
     def test_text_to_textnodes_full(self):
         text = (
             "This is **text** with an _italic_ word and a `code block` and an "
@@ -317,7 +320,9 @@ class TestTextToTextnodes(unittest.TestCase):
             TextNode(" word and a ", TextType.TEXT),
             TextNode("code block", TextType.CODE),
             TextNode(" and an ", TextType.TEXT),
-            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
             TextNode(" and a ", TextType.TEXT),
             TextNode("link", TextType.LINK, "https://boot.dev"),
         ]
@@ -344,7 +349,9 @@ class TestTextToTextnodes(unittest.TestCase):
     def test_text_to_textnodes_only_image(self):
         text = "![image](https://i.imgur.com/zjjcJKZ.png)"
         nodes = text_to_textnodes(text)
-        expected = [TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png")]
+        expected = [
+            TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png")
+        ]
         self.assertListEqual(nodes, expected)
 
     def test_text_to_textnodes_only_link(self):
@@ -382,4 +389,4 @@ class TestTextToTextnodes(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

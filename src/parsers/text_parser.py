@@ -3,21 +3,22 @@ Module for parsing markdown inline elements (bold text, italic, code, links, ima
 """
 
 import re
+
 from src.nodes import TextNode, TextType
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     """
     Splits TextNode by specified delimiter, creating new nodes with specified type.
-    
+
     Args:
         old_nodes: list of nodes to process
         delimiter: delimiter to search for (e.g., "**" for bold text)
         text_type: text type for content between delimiters
-        
+
     Returns:
         list: new list of nodes with split content
-        
+
     Raises:
         ValueError: if closing delimiter is missing
     """
@@ -36,7 +37,9 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
         # if the number of parts is even, it means a closing delimiter is missing
         if len(parts) % 2 == 0:
-            raise ValueError(f"Invalid Markdown syntax: missing closing delimiter '{delimiter}' in text: {node.text}")
+            raise ValueError(
+                f"Invalid Markdown syntax: missing closing delimiter '{delimiter}' in text: {node.text}"
+            )
 
         # process the parts, alternating between TEXT and the specified text_type
         for i, part in enumerate(parts):
@@ -55,10 +58,10 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 def extract_markdown_images(text):
     """
     Extracts images from markdown text.
-    
+
     Args:
         text: string with markdown text
-        
+
     Returns:
         list: list of tuples (alt_text, url) for each found image
     """
@@ -70,10 +73,10 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     """
     Extracts links from markdown text.
-    
+
     Args:
         text: string with markdown text
-        
+
     Returns:
         list: list of tuples (anchor_text, url) for each found link
     """
@@ -85,10 +88,10 @@ def extract_markdown_links(text):
 def split_nodes_image(old_nodes):
     """
     Splits TextNode containing images into separate nodes.
-    
+
     Args:
         old_nodes: list of nodes to process
-        
+
     Returns:
         list: new list of nodes with extracted images
     """
@@ -132,10 +135,10 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     """
     Splits TextNode containing links into separate nodes.
-    
+
     Args:
         old_nodes: list of nodes to process
-        
+
     Returns:
         list: new list of nodes with extracted links
     """
@@ -179,12 +182,12 @@ def split_nodes_link(old_nodes):
 def text_to_textnodes(text):
     """
     Parses markdown text and returns a list of TextNode.
-    
+
     Processes all types of inline elements: images, links, code, bold and italic text.
-    
+
     Args:
         text: string with markdown text
-        
+
     Returns:
         list: list of TextNode representing parsed text
     """
@@ -202,4 +205,4 @@ def text_to_textnodes(text):
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
 
-    return nodes 
+    return nodes

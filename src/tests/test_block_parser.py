@@ -3,13 +3,14 @@ Tests for parsing markdown block elements.
 """
 
 import unittest
+
 from src.nodes import BlockType
-from src.parsers import markdown_to_blocks, block_to_block_type
+from src.parsers import block_to_block_type, markdown_to_blocks
 
 
 class TestBlockParser(unittest.TestCase):
     """Tests for block parsing functions."""
-    
+
     def test_markdown_to_blocks(self):
         md = """
         This is **bolded** paragraph
@@ -167,4 +168,4 @@ class TestBlockParser(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

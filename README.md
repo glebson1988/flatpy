@@ -21,14 +21,14 @@ src/
 │   └── blocknode.py           # BlockType
 ├── parsers/                    # Parsing logic
 │   ├── __init__.py
-│   ├── converter.py           # Node conversion
+│   ├── converter.py           # Node conversion and markdown_to_html_node
 │   ├── text_parser.py         # Inline element parsing
 │   └── block_parser.py        # Block element parsing
 └── tests/                      # Tests
     ├── __init__.py
     ├── test_textnode.py       # TextNode tests
     ├── test_htmlnode.py       # HTML node tests
-    ├── test_converter.py      # Converter tests
+    ├── test_converter.py      # Converter tests (includes markdown_to_html_node)
     ├── test_text_parser.py    # Inline parser tests
     └── test_block_parser.py   # Block parser tests
 ```
@@ -53,9 +53,44 @@ The project supports parsing the following markdown elements:
 
 ## Usage
 
+### Converting Markdown to HTML:
+```python
+from src.parsers import markdown_to_html_node
+
+markdown_text = """
+# Heading
+
+This is **bold** text with _italic_.
+
+- List item 1
+- List item 2
+"""
+
+html_node = markdown_to_html_node(markdown_text)
+html_output = html_node.to_html()
+print(html_output)
+```
+
 ### Running tests:
 ```bash
+make test
+# or
 ./test.sh
+```
+
+### Code quality tools:
+```bash
+# Code formatting
+make format
+
+# Style checking
+make lint
+
+# Full check (formatting + linting + tests)
+make check
+
+# Help
+make help
 ```
 
 ### Running the application:
@@ -65,13 +100,25 @@ python3 -m src.main
 
 ### Importing functions:
 ```python
-from src.parsers import text_to_textnodes, markdown_to_blocks
+from src.parsers import text_to_textnodes, markdown_to_blocks, markdown_to_html_node
 from src.nodes import TextNode, TextType
 ```
+
+## Code Quality
+
+The project uses modern tools to maintain code quality:
+
+- **Black** - automatic code formatting
+- **isort** - import sorting
+- **flake8** - linter for code style checking
+- **unittest** - testing
+
+All tools are configured to work together and are available through convenient Makefile commands.
 
 ## Key Features
 
 1. **Clean architecture**: code organized by functionality with clear separation of concerns
 2. **Easy maintenance**: modular design makes the codebase easy to understand and modify
 3. **Extensible**: can easily add new markdown elements or output formats
-4. **Well tested**: comprehensive test suite with 79+ tests covering all functionality
+4. **Well tested**: comprehensive test suite with 86+ tests covering all functionality
+5. **Code quality**: automatic formatting and code style checking

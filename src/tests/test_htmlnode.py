@@ -3,19 +3,26 @@ Tests for HTMLNode, LeafNode and ParentNode classes.
 """
 
 import unittest
+
 from src.nodes import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
     """Tests for the base HTMLNode class."""
-    
+
     def test_props_to_html_single_attribute(self):
         node = HTMLNode(tag="a", value="link", props={"href": "https://example.com"})
         self.assertEqual(node.props_to_html(), ' href="https://example.com"')
 
     def test_props_to_html_several_attributes(self):
-        node = HTMLNode(tag="a", value="link", props={"href": "https://keklol.com", "target": "_blank"})
-        self.assertEqual(node.props_to_html(), ' href="https://keklol.com" target="_blank"')
+        node = HTMLNode(
+            tag="a",
+            value="link",
+            props={"href": "https://keklol.com", "target": "_blank"},
+        )
+        self.assertEqual(
+            node.props_to_html(), ' href="https://keklol.com" target="_blank"'
+        )
 
     def test_props_to_html_empty(self):
         node = HTMLNode()
@@ -24,7 +31,7 @@ class TestHTMLNode(unittest.TestCase):
 
 class TestLeafNode(unittest.TestCase):
     """Tests for the LeafNode class."""
-    
+
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
@@ -36,7 +43,7 @@ class TestLeafNode(unittest.TestCase):
 
 class TestParentNode(unittest.TestCase):
     """Tests for the ParentNode class."""
-    
+
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node])
@@ -46,12 +53,19 @@ class TestParentNode(unittest.TestCase):
         grandchild_node = LeafNode("b", "grandchild")
         child_node = ParentNode("span", [grandchild_node])
         parent_node = ParentNode("div", [child_node])
-        self.assertEqual(parent_node.to_html(), "<div><span><b>grandchild</b></span></div>")
+        self.assertEqual(
+            parent_node.to_html(), "<div><span><b>grandchild</b></span></div>"
+        )
 
     def test_parent_to_html_with_props(self):
         child_node = LeafNode("span", "child")
-        parent_node = ParentNode("div", [child_node], props={"class": "container", "id": "main"})
-        self.assertEqual(parent_node.to_html(), '<div class="container" id="main"><span>child</span></div>')
+        parent_node = ParentNode(
+            "div", [child_node], props={"class": "container", "id": "main"}
+        )
+        self.assertEqual(
+            parent_node.to_html(),
+            '<div class="container" id="main"><span>child</span></div>',
+        )
 
     def test_parent_to_html_no_tag_raises_error(self):
         child_node = LeafNode("span", "child")
@@ -67,4 +81,4 @@ class TestParentNode(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()
