@@ -1,7 +1,6 @@
 import os
 import shutil
 
-from src.nodes import TextNode, TextType
 from src.parsers import extract_title, markdown_to_html_node
 
 
@@ -79,6 +78,25 @@ def generate_page(from_path, template_path, dest_path):
         f.write(final_html)
 
 
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for item in os.listdir(dir_path_content):
+        current_path = os.path.join(dir_path_content, item)
+
+        if os.path.isfile(current_path) and item.endswith(".md"):
+            # This is a markdown file - generate HTML
+            # Convert content/blog/glorfindel/index.md -> public/blog/glorfindel/index.html
+            relative_path = os.path.relpath(current_path, "content")
+            dest_path = os.path.join(dest_dir_path, relative_path)
+            # Change .md to .html
+            dest_path = dest_path[:-3] + ".html"
+
+            generate_page(current_path, template_path, dest_path)
+
+        elif os.path.isdir(current_path):
+            # This is a directory - recurse into it
+            generate_pages_recursive(current_path, template_path, dest_dir_path)
+
+
 def main():
     # Delete everything in public directory
     if os.path.exists("public"):
@@ -87,8 +105,8 @@ def main():
     # Copy static files to public
     copy_static_to_public()
 
-    # Generate page from content/index.md
-    generate_page("content/index.md", "template.html", "public/index.html")
+    # Generate all pages from content directory recursively
+    generate_pages_recursive("content", "template.html", "public")
 
 
 if __name__ == "__main__":
