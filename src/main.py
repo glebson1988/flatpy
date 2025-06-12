@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 
 from src.parsers import extract_title, markdown_to_html_node
 
@@ -14,7 +15,7 @@ def copy_file(source_path, dest_path):
                 dest_file.write(chunk)
 
 
-def copy_static_to_public(source_dir="static", dest_dir="public"):
+def copy_static_to_docs(source_dir="static", dest_dir="docs"):
     print(f"Starting copy from {source_dir} to {dest_dir}")
 
     if os.path.exists(dest_dir):
@@ -46,7 +47,7 @@ def copy_directory_contents(source_dir, dest_dir):
             copy_directory_contents(source_path, dest_path)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     # Read markdown file
@@ -68,6 +69,10 @@ def generate_page(from_path, template_path, dest_path):
     final_html = template_content.replace("{{ Title }}", title)
     final_html = final_html.replace("{{ Content }}", html_content)
 
+    # Replace href and src paths with basepath
+    final_html = final_html.replace('href="/', f'href="{basepath}')
+    final_html = final_html.replace('src="/', f'src="{basepath}')
+
     # Create destination directory if it doesn't exist
     dest_dir = os.path.dirname(dest_path)
     if dest_dir and not os.path.exists(dest_dir):
@@ -78,35 +83,40 @@ def generate_page(from_path, template_path, dest_path):
         f.write(final_html)
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     for item in os.listdir(dir_path_content):
         current_path = os.path.join(dir_path_content, item)
 
         if os.path.isfile(current_path) and item.endswith(".md"):
             # This is a markdown file - generate HTML
-            # Convert content/blog/glorfindel/index.md -> public/blog/glorfindel/index.html
+            # Convert content/blog/glorfindel/index.md -> docs/blog/glorfindel/index.html
             relative_path = os.path.relpath(current_path, "content")
             dest_path = os.path.join(dest_dir_path, relative_path)
             # Change .md to .html
             dest_path = dest_path[:-3] + ".html"
 
-            generate_page(current_path, template_path, dest_path)
+            generate_page(current_path, template_path, dest_path, basepath)
 
         elif os.path.isdir(current_path):
             # This is a directory - recurse into it
-            generate_pages_recursive(current_path, template_path, dest_dir_path)
+            generate_pages_recursive(current_path, template_path, dest_dir_path, basepath)
 
 
 def main():
-    # Delete everything in public directory
-    if os.path.exists("public"):
-        shutil.rmtree("public")
+    # Get basepath from CLI argument, default to "/"
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
 
-    # Copy static files to public
-    copy_static_to_public()
+    # Delete everything in docs directory
+    if os.path.exists("docs"):
+        shutil.rmtree("docs")
+
+    # Copy static files to docs
+    copy_static_to_docs()
 
     # Generate all pages from content directory recursively
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 
 if __name__ == "__main__":

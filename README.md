@@ -4,7 +4,7 @@ A simple and efficient static site generator in Python that converts markdown fi
 
 ## About the Project
 
-FlatPy is a static site generator that transforms your markdown files into a beautiful website. The project reads markdown content from the `content/` folder, applies HTML templates, and generates a ready-to-use static website in the `public/` folder.
+FlatPy is a static site generator that transforms your markdown files into a beautiful website. The project reads markdown content from the `content/` folder, applies HTML templates, and generates a ready-to-use static website in the `docs/` folder.
 
 Key features:
 - 📝 **Markdown support** - full markdown syntax for content
@@ -12,6 +12,7 @@ Key features:
 - 🗂️ **Directory structure** - automatic navigation creation from folder structure
 - 📱 **Static resources** - copying CSS, images, and other files
 - 🔄 **Recursive generation** - support for nested directories and blogs
+- 🌐 **GitHub Pages ready** - configurable basepath for deployment
 
 ## Project Structure
 
@@ -34,9 +35,10 @@ Key features:
 ├── static/                     # Static files
 │   ├── index.css              # CSS styles
 │   └── images/                # Images
-├── public/                     # Generated site (output)
+├── docs/                       # Generated site (output for GitHub Pages)
 ├── template.html              # HTML template for pages
-└── main.sh                    # Launch script
+├── main.sh                    # Local development script
+└── build.sh                   # Production build script
 ```
 
 ## Supported Markdown Elements
@@ -57,13 +59,27 @@ Key features:
 
 ## Usage
 
-### Running the site generator:
+### Local Development:
 ```bash
-# Run via script
+# Run for local development (default basepath "/")
 ./main.sh
 
 # Or directly via Python
 python3 -m src.main
+```
+
+### Production Build for GitHub Pages:
+```bash
+# Build for GitHub Pages deployment
+./build.sh
+
+# This runs: python3 -m src.main "/flatpy/"
+```
+
+### Custom Basepath:
+```bash
+# Build with custom basepath
+python3 -m src.main "/custom-path/"
 ```
 
 ### Content structure:
@@ -93,7 +109,35 @@ Edit `template.html` to change the design:
 ```
 
 ### Static files:
-Place CSS, images, and other static files in the `static/` folder. They will be copied to `public/` during generation.
+Place CSS, images, and other static files in the `static/` folder. They will be copied to `docs/` during generation.
+
+## GitHub Pages Deployment
+
+This project is configured for easy deployment to GitHub Pages:
+
+1. **Build the site**:
+   ```bash
+   ./build.sh
+   ```
+
+2. **Commit and push**:
+   ```bash
+   git add .
+   git commit -m "Deploy site"
+   git push origin main
+   ```
+
+3. **Configure GitHub Pages**:
+   - Go to your repository settings
+   - Navigate to Pages section
+   - Set source to "Deploy from a branch"
+   - Select "main" branch and "/docs" folder
+   - Save settings
+
+4. **Access your site**:
+   Your site will be available at: `https://USERNAME.github.io/REPO_NAME/`
+
+The `build.sh` script automatically configures all paths for GitHub Pages deployment, ensuring CSS, images, and internal links work correctly with the `/flatpy/` basepath.
 
 ## Development Commands
 
@@ -154,7 +198,8 @@ All tools are configured to work together and are available through convenient M
 3. **Extensibility**: can easily add new markdown elements or output formats
 4. **Well tested**: comprehensive test suite covers all functionality
 5. **Code quality**: automatic formatting and style checking
+6. **Deployment ready**: built-in support for GitHub Pages and other static hosts
 
 ## Result
 
-After running the generator, a ready-to-use static website will appear in the `public/` folder, which can be deployed on any web server or static site hosting (GitHub Pages, Netlify, Vercel, etc.).
+After running the generator, a ready-to-use static website will appear in the `docs/` folder, which can be deployed on any web server or static site hosting (GitHub Pages, Netlify, Vercel, etc.).
