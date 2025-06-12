@@ -1,7 +1,3 @@
-"""
-Module for converting between different node types.
-"""
-
 import re
 
 from src.nodes import BlockType, LeafNode, ParentNode, TextNode, TextType
@@ -10,18 +6,6 @@ from src.parsers.text_parser import text_to_textnodes
 
 
 def text_node_to_html_node(text_node):
-    """
-    Converts TextNode to HTMLNode.
-
-    Args:
-        text_node: TextNode instance to convert
-
-    Returns:
-        LeafNode: corresponding HTMLNode
-
-    Raises:
-        ValueError: if input is not a TextNode or has unsupported type
-    """
     if not isinstance(text_node, TextNode):
         raise ValueError("Input must be a TextNode")
 
@@ -48,15 +32,6 @@ def text_node_to_html_node(text_node):
 
 
 def text_to_children(text):
-    """
-    Converts text with inline markdown to a list of HTMLNode children.
-
-    Args:
-        text: string with inline markdown
-
-    Returns:
-        list: list of HTMLNode objects representing the inline elements
-    """
     text_nodes = text_to_textnodes(text)
     children = []
     for text_node in text_nodes:
@@ -66,16 +41,6 @@ def text_to_children(text):
 
 
 def block_to_html_node(block, block_type):
-    """
-    Converts a markdown block to an HTMLNode.
-
-    Args:
-        block: string with block content
-        block_type: BlockType enum value
-
-    Returns:
-        ParentNode or LeafNode: HTML node representing the block
-    """
     if block_type == BlockType.PARAGRAPH:
         # replace newlines with spaces for paragraphs
         text = block.replace("\n", " ")
@@ -149,15 +114,6 @@ def block_to_html_node(block, block_type):
 
 
 def markdown_to_html_node(markdown):
-    """
-    Converts a full markdown document into a single parent HTMLNode.
-
-    Args:
-        markdown: string with full markdown document
-
-    Returns:
-        ParentNode: single parent HTML node containing all block elements
-    """
     blocks = markdown_to_blocks(markdown)
     children = []
 

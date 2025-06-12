@@ -1,4 +1,8 @@
-from src.parsers.block_parser import block_to_block_type, markdown_to_blocks
+from src.parsers.block_parser import (
+    block_to_block_type,
+    extract_title,
+    markdown_to_blocks,
+)
 from src.parsers.converter import (
     block_to_html_node,
     markdown_to_html_node,
@@ -27,4 +31,5 @@ __all__ = [
     "text_to_textnodes",
     "markdown_to_blocks",
     "block_to_block_type",
+    "extract_title",
 ]

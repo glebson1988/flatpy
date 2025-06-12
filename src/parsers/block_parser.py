@@ -1,25 +1,9 @@
-"""
-Module for parsing markdown block elements (headings, lists, quotes, code).
-"""
-
 import re
 
 from src.nodes import BlockType
 
 
 def markdown_to_blocks(markdown):
-    """
-    Splits markdown text into separate blocks.
-
-    Blocks are separated by two or more line breaks.
-    Empty lines and extra spaces are removed.
-
-    Args:
-        markdown: string with markdown text
-
-    Returns:
-        list: list of strings, each representing a separate block
-    """
     raw_blocks = re.split(r"\n\s*\n", markdown.strip())
 
     blocks = []
@@ -33,15 +17,6 @@ def markdown_to_blocks(markdown):
 
 
 def block_to_block_type(block):
-    """
-    Determines block type based on its content.
-
-    Args:
-        block: string with block content
-
-    Returns:
-        BlockType: block type (HEADING, CODE, QUOTE, UNORDERED_LIST, ORDERED_LIST, PARAGRAPH)
-    """
     if not block:
         return BlockType.PARAGRAPH
 
@@ -74,3 +49,13 @@ def block_to_block_type(block):
 
     # default: paragraph
     return BlockType.PARAGRAPH
+
+
+def extract_title(markdown):
+    lines = markdown.splitlines()
+
+    for line in lines:
+        if re.match(r"^#\s+.+$", line):
+            return line[1:].strip()
+
+    raise Exception("No h1 header found")

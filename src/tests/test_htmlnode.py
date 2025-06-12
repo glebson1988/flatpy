@@ -1,14 +1,9 @@
-"""
-Tests for HTMLNode, LeafNode and ParentNode classes.
-"""
-
 import unittest
 
 from src.nodes import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
-    """Tests for the base HTMLNode class."""
 
     def test_props_to_html_single_attribute(self):
         node = HTMLNode(tag="a", value="link", props={"href": "https://example.com"})
@@ -30,7 +25,6 @@ class TestHTMLNode(unittest.TestCase):
 
 
 class TestLeafNode(unittest.TestCase):
-    """Tests for the LeafNode class."""
 
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
@@ -42,7 +36,6 @@ class TestLeafNode(unittest.TestCase):
 
 
 class TestParentNode(unittest.TestCase):
-    """Tests for the ParentNode class."""
 
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")

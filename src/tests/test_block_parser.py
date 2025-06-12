@@ -1,15 +1,10 @@
-"""
-Tests for parsing markdown block elements.
-"""
-
 import unittest
 
 from src.nodes import BlockType
-from src.parsers import block_to_block_type, markdown_to_blocks
+from src.parsers import block_to_block_type, extract_title, markdown_to_blocks
 
 
 class TestBlockParser(unittest.TestCase):
-    """Tests for block parsing functions."""
 
     def test_markdown_to_blocks(self):
         md = """
@@ -165,6 +160,58 @@ class TestBlockParser(unittest.TestCase):
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
         block = ""  # empty block
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_extract_title_simple(self):
+        markdown = "# Hello"
+        self.assertEqual(extract_title(markdown), "Hello")
+
+    def test_extract_title_with_whitespace(self):
+        markdown = "#   World   "
+        self.assertEqual(extract_title(markdown), "World")
+
+    def test_extract_title_in_middle(self):
+        markdown = """Some text here
+
+# Main Title
+
+More text"""
+        self.assertEqual(extract_title(markdown), "Main Title")
+
+    def test_extract_title_multiple_h1(self):
+        markdown = """# First Title
+Some text
+# Second Title"""
+        self.assertEqual(extract_title(markdown), "First Title")
+
+    def test_extract_title_with_content_after(self):
+        markdown = "# Title with extra content here"
+        self.assertEqual(extract_title(markdown), "Title with extra content here")
+
+    def test_extract_title_no_h1_raises_exception(self):
+        markdown = "## Not an h1\nSome text here"
+        with self.assertRaises(Exception) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No h1 header found")
+
+    def test_extract_title_empty_markdown_raises_exception(self):
+        markdown = ""
+        with self.assertRaises(Exception) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No h1 header found")
+
+    def test_extract_title_only_h2_h3_raises_exception(self):
+        markdown = """## Heading 2
+### Heading 3
+#### Heading 4"""
+        with self.assertRaises(Exception) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No h1 header found")
+
+    def test_extract_title_whitespace_only_raises_exception(self):
+        markdown = "   \n\n   "
+        with self.assertRaises(Exception) as context:
+            extract_title(markdown)
+        self.assertEqual(str(context.exception), "No h1 header found")
 
 
 if __name__ == "__main__":

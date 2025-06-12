@@ -1,7 +1,3 @@
-"""
-Tests for TextNode to HTMLNode conversion.
-"""
-
 import unittest
 
 from src.nodes import TextNode, TextType
@@ -9,7 +5,6 @@ from src.parsers import markdown_to_html_node, text_node_to_html_node
 
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
-    """Tests for the text_node_to_html_node function."""
 
     def test_text(self):
         node = TextNode("This is a text node", TextType.TEXT)
@@ -84,7 +79,6 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
 
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
-    """Tests for the markdown_to_html_node function."""
 
     def test_paragraphs(self):
         md = """

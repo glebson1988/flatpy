@@ -1,7 +1,3 @@
-"""
-Tests for parsing markdown inline elements.
-"""
-
 import unittest
 
 from src.nodes import TextNode, TextType
@@ -16,7 +12,6 @@ from src.parsers import (
 
 
 class TestSplitNodesDelimiter(unittest.TestCase):
-    """Tests for the split_nodes_delimiter function."""
 
     def test_split_code_single(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
@@ -112,7 +107,6 @@ class TestSplitNodesDelimiter(unittest.TestCase):
 
 
 class TestExtractMarkdownElements(unittest.TestCase):
-    """Tests for extracting images and links from markdown."""
 
     def test_extract_markdown_images_single(self):
         text = "This is text with a ![image](https://i.imgur.com/zjjcJKZ.png) and some more text."
@@ -180,7 +174,6 @@ class TestExtractMarkdownElements(unittest.TestCase):
 
 
 class TestSplitNodesImage(unittest.TestCase):
-    """Tests for the split_nodes_image function."""
 
     def test_split_images(self):
         node = TextNode(
@@ -241,7 +234,6 @@ class TestSplitNodesImage(unittest.TestCase):
 
 
 class TestSplitNodesLink(unittest.TestCase):
-    """Tests for the split_nodes_link function."""
 
     def test_split_links(self):
         node = TextNode(
@@ -304,7 +296,6 @@ class TestSplitNodesLink(unittest.TestCase):
 
 
 class TestTextToTextnodes(unittest.TestCase):
-    """Tests for the text_to_textnodes function."""
 
     def test_text_to_textnodes_full(self):
         text = (

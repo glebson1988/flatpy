@@ -1,27 +1,9 @@
-"""
-Module for parsing markdown inline elements (bold text, italic, code, links, images).
-"""
-
 import re
 
 from src.nodes import TextNode, TextType
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    """
-    Splits TextNode by specified delimiter, creating new nodes with specified type.
-
-    Args:
-        old_nodes: list of nodes to process
-        delimiter: delimiter to search for (e.g., "**" for bold text)
-        text_type: text type for content between delimiters
-
-    Returns:
-        list: new list of nodes with split content
-
-    Raises:
-        ValueError: if closing delimiter is missing
-    """
     new_nodes = []
 
     for node in old_nodes:
@@ -56,45 +38,18 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
 
 def extract_markdown_images(text):
-    """
-    Extracts images from markdown text.
-
-    Args:
-        text: string with markdown text
-
-    Returns:
-        list: list of tuples (alt_text, url) for each found image
-    """
     pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)
     return [(alt_text, url) for alt_text, url in matches]
 
 
 def extract_markdown_links(text):
-    """
-    Extracts links from markdown text.
-
-    Args:
-        text: string with markdown text
-
-    Returns:
-        list: list of tuples (anchor_text, url) for each found link
-    """
     pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)
     return [(anchor_text, url) for anchor_text, url in matches]
 
 
 def split_nodes_image(old_nodes):
-    """
-    Splits TextNode containing images into separate nodes.
-
-    Args:
-        old_nodes: list of nodes to process
-
-    Returns:
-        list: new list of nodes with extracted images
-    """
     new_nodes = []
     for node in old_nodes:
         if not isinstance(node, TextNode) or node.text_type != TextType.TEXT:
@@ -133,15 +88,6 @@ def split_nodes_image(old_nodes):
 
 
 def split_nodes_link(old_nodes):
-    """
-    Splits TextNode containing links into separate nodes.
-
-    Args:
-        old_nodes: list of nodes to process
-
-    Returns:
-        list: new list of nodes with extracted links
-    """
     new_nodes = []
     for node in old_nodes:
         if not isinstance(node, TextNode) or node.text_type != TextType.TEXT:
@@ -180,17 +126,6 @@ def split_nodes_link(old_nodes):
 
 
 def text_to_textnodes(text):
-    """
-    Parses markdown text and returns a list of TextNode.
-
-    Processes all types of inline elements: images, links, code, bold and italic text.
-
-    Args:
-        text: string with markdown text
-
-    Returns:
-        list: list of TextNode representing parsed text
-    """
     # start with a single TextNode of type TEXT
     nodes = [TextNode(text, TextType.TEXT)] if text else []
 
