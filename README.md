@@ -1,90 +1,111 @@
-# FlatPy - Markdown to HTML Converter
+# FlatPy - Static Site Generator
 
-A project for converting markdown to HTML with a well-organized code structure.
+A simple and efficient static site generator in Python that converts markdown files into a complete website.
 
 ## About the Project
 
-FlatPy is a comprehensive markdown to HTML converter that parses markdown text and converts it into structured HTML output. The project is designed with clean architecture principles, separating concerns into logical modules for easy maintenance and extensibility.
+FlatPy is a static site generator that transforms your markdown files into a beautiful website. The project reads markdown content from the `content/` folder, applies HTML templates, and generates a ready-to-use static website in the `public/` folder.
 
-The converter handles both inline and block-level markdown elements, providing a complete solution for markdown processing. It uses a node-based approach where markdown text is first parsed into intermediate TextNode and HTMLNode representations before being converted to final HTML output.
+Key features:
+- 📝 **Markdown support** - full markdown syntax for content
+- 🎨 **HTML templates** - customizable templates for page styling
+- 🗂️ **Directory structure** - automatic navigation creation from folder structure
+- 📱 **Static resources** - copying CSS, images, and other files
+- 🔄 **Recursive generation** - support for nested directories and blogs
 
 ## Project Structure
 
 ```
-src/
-├── __init__.py                 # Package initialization
-├── main.py                     # Application entry point
-├── nodes/                      # Data models
-│   ├── __init__.py
-│   ├── textnode.py            # TextNode and TextType
-│   ├── htmlnode.py            # HTMLNode, LeafNode, ParentNode
-│   └── blocknode.py           # BlockType
-├── parsers/                    # Parsing logic
-│   ├── __init__.py
-│   ├── converter.py           # Node conversion and markdown_to_html_node
-│   ├── text_parser.py         # Inline element parsing
-│   └── block_parser.py        # Block element parsing
-└── tests/                      # Tests
-    ├── __init__.py
-    ├── test_textnode.py       # TextNode tests
-    ├── test_htmlnode.py       # HTML node tests
-    ├── test_converter.py      # Converter tests (includes markdown_to_html_node)
-    ├── test_text_parser.py    # Inline parser tests
-    └── test_block_parser.py   # Block parser tests
+├── src/                        # Source code of the generator
+│   ├── main.py                 # Main file - site generation
+│   ├── nodes/                  # Data models
+│   │   ├── textnode.py         # TextNode and TextType
+│   │   ├── htmlnode.py         # HTMLNode, LeafNode, ParentNode
+│   │   └── blocknode.py        # BlockType for block elements
+│   ├── parsers/                # Markdown parsers
+│   │   ├── converter.py        # HTML conversion
+│   │   ├── text_parser.py      # Inline element parsing
+│   │   └── block_parser.py     # Block element parsing
+│   └── tests/                  # Tests
+├── content/                    # Markdown content of the site
+│   ├── index.md               # Home page
+│   ├── blog/                  # Blog
+│   └── contact/               # Contact information
+├── static/                     # Static files
+│   ├── index.css              # CSS styles
+│   └── images/                # Images
+├── public/                     # Generated site (output)
+├── template.html              # HTML template for pages
+└── main.sh                    # Launch script
 ```
 
-## Functionality
-
-The project supports parsing the following markdown elements:
+## Supported Markdown Elements
 
 ### Inline elements:
-- **Bold text**: \*\*text\*\*
-- *Italic text*: \_text\_
-- `Code`: \`code\`
-- Links: \[text\]\(url\)
-- Images: \!\[alt\]\(url\)
+- **Bold text**: `**text**`
+- *Italic*: `*text*`
+- `Code`: `` `code` ``
+- Links: `[text](url)`
+- Images: `![alt](url)`
 
 ### Block elements:
-- Headings: \# H1, \#\# H2, etc.
-- Code blocks: \`\`\` \`\`\`
-- Quotes: \> quote
-- Lists: \- item and 1\. item
+- Headings: `# H1`, `## H2`, `### H3`, etc.
+- Code blocks: ``` ``` ```
+- Quotes: `> quote`
+- Lists: `- item` and `1. item`
 - Paragraphs
 
 ## Usage
 
-### Converting Markdown to HTML:
-```python
-from src.parsers import markdown_to_html_node
-
-markdown_text = """
-# Heading
-
-This is **bold** text with _italic_.
-
-- List item 1
-- List item 2
-"""
-
-html_node = markdown_to_html_node(markdown_text)
-html_output = html_node.to_html()
-print(html_output)
-```
-
-### Running tests:
+### Running the site generator:
 ```bash
-make test
-# or
-./test.sh
+# Run via script
+./main.sh
+
+# Or directly via Python
+python3 -m src.main
 ```
 
-### Code quality tools:
+### Content structure:
+Place your markdown files in the `content/` folder:
+```
+content/
+├── index.md           # Home page
+├── about.md          # About page
+└── blog/             # Blog
+    ├── post1.md      # First post
+    └── post2.md      # Second post
+```
+
+### HTML template:
+Edit `template.html` to change the design:
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>{{ Title }}</title>
+    <link href="/index.css" rel="stylesheet" />
+  </head>
+  <body>
+    <article>{{ Content }}</article>
+  </body>
+</html>
+```
+
+### Static files:
+Place CSS, images, and other static files in the `static/` folder. They will be copied to `public/` during generation.
+
+## Development Commands
+
 ```bash
 # Code formatting
 make format
 
-# Style checking
+# Code style checking
 make lint
+
+# Run tests
+make test
 
 # Full check (formatting + linting + tests)
 make check
@@ -93,32 +114,47 @@ make check
 make help
 ```
 
-### Running the application:
-```bash
-python3 -m src.main
-```
+## Code Usage Example
 
-### Importing functions:
 ```python
-from src.parsers import text_to_textnodes, markdown_to_blocks, markdown_to_html_node
-from src.nodes import TextNode, TextType
+from src.parsers import markdown_to_html_node, extract_title
+
+# Convert markdown to HTML
+markdown_text = """
+# Heading
+
+This is **bold** text with *italic*.
+
+- List item 1
+- List item 2
+"""
+
+html_node = markdown_to_html_node(markdown_text)
+html_output = html_node.to_html()
+
+# Extract title
+title = extract_title(markdown_text)
 ```
 
-## Code Quality
+## Code Quality Tools
 
 The project uses modern tools to maintain code quality:
 
-- **Black** - automatic code formatting
-- **isort** - import sorting
-- **flake8** - linter for code style checking
-- **unittest** - testing
+- **Black** — automatic code formatting
+- **isort** — import sorting
+- **flake8** — code style checking
+- **unittest** — testing
 
 All tools are configured to work together and are available through convenient Makefile commands.
 
-## Key Features
+## Architecture Features
 
 1. **Clean architecture**: code organized by functionality with clear separation of concerns
-2. **Easy maintenance**: modular design makes the codebase easy to understand and modify
-3. **Extensible**: can easily add new markdown elements or output formats
-4. **Well tested**: comprehensive test suite with 86+ tests covering all functionality
-5. **Code quality**: automatic formatting and code style checking
+2. **Modularity**: easily understandable and modifiable code
+3. **Extensibility**: can easily add new markdown elements or output formats
+4. **Well tested**: comprehensive test suite covers all functionality
+5. **Code quality**: automatic formatting and style checking
+
+## Result
+
+After running the generator, a ready-to-use static website will appear in the `public/` folder, which can be deployed on any web server or static site hosting (GitHub Pages, Netlify, Vercel, etc.).
