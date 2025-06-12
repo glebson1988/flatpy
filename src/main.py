@@ -2,6 +2,7 @@ import os
 import shutil
 
 from src.nodes import TextNode, TextType
+from src.parsers import extract_title, markdown_to_html_node
 
 
 def copy_file(source_path, dest_path):
@@ -46,11 +47,48 @@ def copy_directory_contents(source_dir, dest_dir):
             copy_directory_contents(source_path, dest_path)
 
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+
+    # Read markdown file
+    with open(from_path, "r", encoding="utf-8") as f:
+        markdown_content = f.read()
+
+    # Read template file
+    with open(template_path, "r", encoding="utf-8") as f:
+        template_content = f.read()
+
+    # Convert markdown to HTML
+    html_node = markdown_to_html_node(markdown_content)
+    html_content = html_node.to_html()
+
+    # Extract title
+    title = extract_title(markdown_content)
+
+    # Replace placeholders in template
+    final_html = template_content.replace("{{ Title }}", title)
+    final_html = final_html.replace("{{ Content }}", html_content)
+
+    # Create destination directory if it doesn't exist
+    dest_dir = os.path.dirname(dest_path)
+    if dest_dir and not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    # Write final HTML to destination
+    with open(dest_path, "w", encoding="utf-8") as f:
+        f.write(final_html)
+
+
 def main():
+    # Delete everything in public directory
+    if os.path.exists("public"):
+        shutil.rmtree("public")
+
+    # Copy static files to public
     copy_static_to_public()
 
-    node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(node)
+    # Generate page from content/index.md
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 
 if __name__ == "__main__":
