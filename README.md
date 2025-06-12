@@ -73,7 +73,7 @@ python3 -m src.main
 # Build for GitHub Pages deployment
 ./build.sh
 
-# This runs: python3 -m src.main "/flatpy/"
+# This runs: python3 -m src.main "/flatpy"
 ```
 
 ### Custom Basepath:
@@ -137,7 +137,7 @@ This project is configured for easy deployment to GitHub Pages:
 4. **Access your site**:
    Your site will be available at: `https://USERNAME.github.io/REPO_NAME/`
 
-The `build.sh` script automatically configures all paths for GitHub Pages deployment, ensuring CSS, images, and internal links work correctly with the `/flatpy/` basepath.
+The `build.sh` script automatically configures all paths for GitHub Pages deployment, ensuring CSS, images, and internal links work correctly with the `/flatpy` basepath.
 
 ## Development Commands
 
